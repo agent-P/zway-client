@@ -7,11 +7,14 @@ import java.util.ArrayList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import org.springframework.context.annotation.Bean;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
+
+import org.json.JSONObject;
+import spagnola.ha.zway.service.ZWayControllerService;
 
 /**
  * @author spagnola
@@ -22,11 +25,11 @@ public class EchoWebSocketHandler extends TextWebSocketHandler {
 	private static Logger logger = LoggerFactory.getLogger(EchoWebSocketHandler.class);
 	
 	private static ArrayList<WebSocketSession> sessions = new ArrayList<>();
+	
+	private final ZWayControllerService zWayControllerService;
 
-	private final EchoService echoService;
-
-	public EchoWebSocketHandler(EchoService echoService) {
-		this.echoService = echoService;
+	public EchoWebSocketHandler(ZWayControllerService zWayControllerService) {
+		this.zWayControllerService = zWayControllerService;
 	}
 
 	@Override
@@ -43,15 +46,27 @@ public class EchoWebSocketHandler extends TextWebSocketHandler {
 
 	@Override
 	public void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-		String echoMessage = this.echoService.getMessage(message.getPayload());
-		logger.info(session.getId() + ": " + echoMessage);
 		
-		for(WebSocketSession sessionInstance : sessions) {
-			logger.info("Sending message to: " + sessionInstance.getId());
-			sessionInstance.sendMessage(new TextMessage(echoMessage));
-		}
+		JSONObject commandMessage;
 		
-		//session.sendMessage(new TextMessage(echoMessage));
+		logger.info("Received message from: " + session.getId());
+		
+//		try {
+			commandMessage = new JSONObject(message.getPayload());
+			
+			if(commandMessage.getString("type").equals("zway-command")) {
+				logger.info("Received zway-command: " + commandMessage.getString("device-id") + " : " + commandMessage.getString("command"));
+				
+				this.zWayControllerService.commandZWayVirtualDevices(commandMessage.getString("device-id"), commandMessage.getString("command"));
+			}
+//		}
+//		catch(Exception exception) {
+//			//logger.warn("Message Error: " + exception.getMessage());
+//			logger.warn(exception.getStackTrace().toString());
+//		}
+		
+		broadcastMessage(message.getPayload());
+		
 	}
 
 	@Override

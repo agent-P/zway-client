@@ -1,6 +1,8 @@
 package spagnola.ha.zway;
 
 import spagnola.ha.websocket.echo.*;
+import spagnola.ha.zway.service.ZWayControllerService;
+
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.NetworkTrafficServerConnector;
 import org.eclipse.jetty.server.Server;
@@ -81,13 +83,14 @@ public class ZwayClientApplication extends SpringBootServletInitializer implemen
 	}
 	
 	@Bean
-	public EchoService echoService() {
-		return new DefaultEchoService("Did you say \"%s\"?");
+	public ZWayControllerService zWayControllerService() {
+		return new ZWayControllerService();
+		
 	}
-
+	
 	@Bean
 	public WebSocketHandler echoWebSocketHandler() {
-		return new EchoWebSocketHandler(echoService());
+		return new EchoWebSocketHandler(zWayControllerService());
 	}
 
 
