@@ -1,13 +1,13 @@
 /**
  * 
  */
-package spagnola.ha.websocket.echo;
+package spagnola.ha.websocket;
 
 import java.util.ArrayList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Bean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -20,16 +20,17 @@ import spagnola.ha.zway.service.ZWayControllerService;
  * @author spagnola
  *
  */
-public class EchoWebSocketHandler extends TextWebSocketHandler {
+public class CmdTlmWebSocketHandler extends TextWebSocketHandler {
 
-	private static Logger logger = LoggerFactory.getLogger(EchoWebSocketHandler.class);
+	private static Logger logger = LoggerFactory.getLogger(CmdTlmWebSocketHandler.class);
 	
-	private static ArrayList<WebSocketSession> sessions = new ArrayList<>();
+	private static ArrayList<WebSocketSession> sessions = new ArrayList<WebSocketSession>();
 	
-	private final ZWayControllerService zWayControllerService;
+	@Autowired
+	private ZWayControllerService zWayControllerService;
 
-	public EchoWebSocketHandler(ZWayControllerService zWayControllerService) {
-		this.zWayControllerService = zWayControllerService;
+	public CmdTlmWebSocketHandler() {
+		
 	}
 
 	@Override
@@ -51,7 +52,7 @@ public class EchoWebSocketHandler extends TextWebSocketHandler {
 		
 		logger.info("Received message from: " + session.getId());
 		
-//		try {
+		try {
 			commandMessage = new JSONObject(message.getPayload());
 			
 			if(commandMessage.getString("type").equals("zway-command")) {
@@ -59,11 +60,11 @@ public class EchoWebSocketHandler extends TextWebSocketHandler {
 				
 				this.zWayControllerService.commandZWayVirtualDevices(commandMessage.getString("device-id"), commandMessage.getString("command"));
 			}
-//		}
-//		catch(Exception exception) {
-//			//logger.warn("Message Error: " + exception.getMessage());
-//			logger.warn(exception.getStackTrace().toString());
-//		}
+		}
+		catch(Exception exception) {
+			//logger.warn("Message Error: " + exception.getMessage());
+			logger.warn(exception.getStackTrace().toString());
+		}
 		
 		broadcastMessage(message.getPayload());
 		
@@ -82,6 +83,5 @@ public class EchoWebSocketHandler extends TextWebSocketHandler {
 		}
 
 	}
-
 
 }

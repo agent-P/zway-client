@@ -6,10 +6,9 @@ package spagnola.ha.zway.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-import spagnola.ha.websocket.echo.EchoWebSocketHandler;
+import spagnola.ha.websocket.CmdTlmWebSocketHandler;
 import spagnola.ha.zway.client.ZAutomationClient;
 import spagnola.ha.zway.client.ZWayClient;
 
@@ -17,7 +16,7 @@ import spagnola.ha.zway.client.ZWayClient;
  * @author spagnola
  *
  */
-@Component
+@Service
 public class ZWayControllerService {
 	private static Logger logger = LoggerFactory.getLogger(ZWayControllerService.class);
 	
@@ -25,6 +24,8 @@ public class ZWayControllerService {
 	private ZWayClient client;
 	@Autowired
 	private ZAutomationClient zautomationClient;
+	@Autowired
+	private CmdTlmWebSocketHandler cmdTlmWebSocketHandler;
 	
 	public String getZWayController() {
 		logger.info("Get Controller Response from ZWay server...");
@@ -56,18 +57,12 @@ public class ZWayControllerService {
 	public void updateZWayVirtualDevice(String deviceId, String deviceInfo) {
 		logger.info("Device: " + deviceId + " -- message: " + deviceInfo);
         try {
-        	this.echoWebSocketHandler().broadcastMessage(deviceId + ": " + deviceInfo);
+        	cmdTlmWebSocketHandler.broadcastMessage(deviceId + ": " + deviceInfo);
         }
         catch(Exception error) {
         	logger.info(error.getMessage());
         }
 
 	}
-
-    @Bean
-    EchoWebSocketHandler echoWebSocketHandler() {
-		return new EchoWebSocketHandler(null);
-    	
-    }
 
 }

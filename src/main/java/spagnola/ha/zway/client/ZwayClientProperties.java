@@ -15,6 +15,8 @@ public class ZwayClientProperties {
 	private char[] password;
 	private String zwayServiceUrl;
 	private String zautomationServiceUrl;
+	private String keystoreFile;
+	private String keystorePass;
 	
 	/**
 	 * @return the readTimeout
@@ -123,6 +125,30 @@ public class ZwayClientProperties {
 	 */
 	public void setEfServerHost(String efServerHost) {
 		this.efServerHost = efServerHost;
+	}
+	/**
+	 * @return the keystoreFile
+	 */
+	public String getKeystoreFile() {
+		return keystoreFile;
+	}
+	/**
+	 * @param keystoreFile the keystoreFile to set
+	 */
+	public void setKeystoreFile(String keystoreFile) {
+		this.keystoreFile = keystoreFile;
+	}
+	/**
+	 * @return the keystorePass
+	 */
+	public String getKeystorePass() {
+		return keystorePass;
+	}
+	/**
+	 * @param keystorePass the keystorePass to set
+	 */
+	public void setKeystorePass(String keystorePass) {
+		this.keystorePass = keystorePass;
 	}
 	
 	
