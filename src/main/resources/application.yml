@@ -1,0 +1,22 @@
+---
+spring:
+  profiles: default
+
+zway.client:
+  server-port : 8443
+  ef-server-port : 8080
+  ef-server-host : 127.0.0.1
+  read-timeout : 10000
+  connect-timeout : 10000
+  username : admin
+  password : YOUR_ZWAY_PASSWORD
+  zway-service-url : http://10.0.1.52:8083/ZWaveAPI/Run/{command}
+  zautomation-service-url : http://10.0.1.52:8083/ZAutomation/api/v1/{command}
+  keystore-file : keystore.p12
+  keystore-pass : localhost
+
+---
+spring:
+   profiles: unit-test
+zway.client:
+  server-port : 8443
