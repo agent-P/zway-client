@@ -1,6 +1,7 @@
 package spagnola.ha.zway;
 
 import spagnola.ha.websocket.CmdTlmWebSocketHandler;
+import spagnola.ha.zway.client.ZwayClientProperties;
 import spagnola.ha.zway.service.ZWayControllerService;
 
 import org.eclipse.jetty.server.Connector;
@@ -8,7 +9,7 @@ import org.eclipse.jetty.server.NetworkTrafficServerConnector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
@@ -27,26 +28,19 @@ import org.springframework.web.client.RestTemplate;
 
 @EnableWebSocket
 @SpringBootApplication
-public class ZwayClientApplication extends SpringBootServletInitializer implements WebSocketConfigurer{
+public class ZwayClientApplication extends SpringBootServletInitializer implements WebSocketConfigurer {
 	
-	@Value("${zway.client.keystore-file}") private String keystoreFile;
-	@Value("${zway.client.keystore-pass}") private String keystorePass;
-	@Value("${zway.client.server-port}") private int serverPort;
-	@Value("${zway.client.ef-server-port}") private int efServerPort;
-	@Value("${zway.client.ef-server-host}") private String efServerHost;
-	@Value("${zway.client.password}") private String zwayPassword;
-	@Value("${zway.client.username}") private String zwayUsername;
-	@Value("${zway.client.read-timeout}") private int zwayReadTimeout;
-	@Value("${zway.client.connect-timeout}") private int zwayConnectTimeout;
-
+	@Autowired
+	private ZwayClientProperties zwayClientProperties;
 
 	public static void main(String[] args) {
+				
 		SpringApplication.run(ZwayClientApplication.class, args);
 	}
 
 	@Bean
     public EmbeddedServletContainerCustomizer embeddedServletContainerCustomizer() throws Exception {
-        final String absoluteKeystoreFile = ResourceUtils.getFile(keystoreFile).getAbsolutePath();
+        final String absoluteKeystoreFile = ResourceUtils.getFile(zwayClientProperties.getKeystoreFile()).getAbsolutePath();
         
         return new EmbeddedServletContainerCustomizer() {
             @Override
@@ -59,16 +53,16 @@ public class ZwayClientApplication extends SpringBootServletInitializer implemen
                     public void customize(Server server) {
                         SslContextFactory sslContextFactory = new SslContextFactory();
                         sslContextFactory.setKeyStorePath(absoluteKeystoreFile);
-                        sslContextFactory.setKeyStorePassword(keystorePass);
+                        sslContextFactory.setKeyStorePassword(zwayClientProperties.getKeystorePass());
                         sslContextFactory.setKeyStoreType("PKCS12");
 
                         ServerConnector sslConnector = new ServerConnector(	server, sslContextFactory);
-                        sslConnector.setPort(serverPort);
+                        sslConnector.setPort(zwayClientProperties.getServerPort());
                         server.setConnectors(new Connector[] { sslConnector });
                         
                         final NetworkTrafficServerConnector connector = new NetworkTrafficServerConnector(server);
-                        connector.setHost(efServerHost);
-                        connector.setPort(Integer.valueOf(efServerPort));
+                        connector.setHost(zwayClientProperties.getEfServerHost());
+                        connector.setPort(Integer.valueOf(zwayClientProperties.getEfServerPort()));
                         server.addConnector(connector);
                     }
                 });
@@ -94,9 +88,9 @@ public class ZwayClientApplication extends SpringBootServletInitializer implemen
 
 	@Bean 
 	public RestTemplate restTemplate(RestTemplateBuilder builder) { 
-		return builder.setReadTimeout(zwayReadTimeout)
-				.setConnectTimeout(zwayConnectTimeout)
-				.basicAuthorization(zwayUsername, String.valueOf(zwayPassword))
+		return builder.setReadTimeout(zwayClientProperties.getReadTimeout())
+				.setConnectTimeout(zwayClientProperties.getConnectTimeout())
+				.basicAuthorization(zwayClientProperties.getUsername(), String.valueOf(zwayClientProperties.getPassword()))
 				.build(); 
 		
 	}
