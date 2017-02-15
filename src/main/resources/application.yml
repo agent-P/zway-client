@@ -9,7 +9,7 @@ zway.client:
   read-timeout : 10000
   connect-timeout : 10000
   username : admin
-  password : YOUR_ZWAY_PASSWORD
+  password : 4ZWWhocares!
   zway-service-url : http://10.0.1.52:8083/ZWaveAPI/Run/{command}
   zautomation-service-url : http://10.0.1.52:8083/ZAutomation/api/v1/{command}
   keystore-file : keystore.p12

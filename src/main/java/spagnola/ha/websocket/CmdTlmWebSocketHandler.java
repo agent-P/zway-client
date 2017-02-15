@@ -51,18 +51,25 @@ public class CmdTlmWebSocketHandler extends TextWebSocketHandler {
 		JSONObject commandMessage;
 		
 		logger.info("Received message from: " + session.getId());
+		logger.info("message size: " + message.getPayload().length());
+		logger.info("Received JSON: " + message.getPayload());
 		
 		try {
+			logger.warn("trying to create JSONObject...");
 			commandMessage = new JSONObject(message.getPayload());
+			logger.warn("trying to send a command message: " + commandMessage.getString("command"));
 			
 			if(commandMessage.getString("type").equals("zway-command")) {
 				logger.info("Received zway-command: " + commandMessage.getString("device-id") + " : " + commandMessage.getString("command"));
 				
 				this.zWayControllerService.commandZWayVirtualDevices(commandMessage.getString("device-id"), commandMessage.getString("command"));
 			}
+			else {
+				logger.warn("didn't get a command message...");
+			}
 		}
 		catch(Exception exception) {
-			//logger.warn("Message Error: " + exception.getMessage());
+			logger.warn("Message Error: " + exception.getMessage());
 			logger.warn(exception.getStackTrace().toString());
 		}
 		

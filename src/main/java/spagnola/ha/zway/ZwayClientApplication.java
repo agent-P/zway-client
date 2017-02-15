@@ -64,6 +64,7 @@ public class ZwayClientApplication extends SpringBootServletInitializer implemen
                         connector.setHost(zwayClientProperties.getEfServerHost());
                         connector.setPort(Integer.valueOf(zwayClientProperties.getEfServerPort()));
                         server.addConnector(connector);
+                        
                     }
                 });
             }

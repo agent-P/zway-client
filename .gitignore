@@ -33,3 +33,7 @@ nbdist/
 .gradle/3.3/taskArtifacts/taskArtifacts.lock
 
 gradlew.bat
+
+ha-server-keystore.jks
+
+ha-server-keystore.p12

@@ -53,4 +53,10 @@ public class ZWayServerController {
     }
     
     
+    @RequestMapping("alarm-panel/{deviceId}")
+    public void updateAlarmPanelDevice(@PathVariable final String deviceId, @RequestBody String deviceInfo) {
+        this.zWayControllerService.updateAlarmPanelDevice(deviceId, deviceInfo);
+    }
+    
+    
 }

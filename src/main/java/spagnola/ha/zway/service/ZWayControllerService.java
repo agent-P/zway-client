@@ -62,7 +62,16 @@ public class ZWayControllerService {
         catch(Exception error) {
         	logger.info(error.getMessage());
         }
+	}
 
+	public void updateAlarmPanelDevice(String deviceId, String deviceInfo) {
+		logger.info("Device: " + deviceId + " -- message: " + deviceInfo);
+        try {
+        	cmdTlmWebSocketHandler.broadcastMessage(deviceId + ": " + deviceInfo);
+        }
+        catch(Exception error) {
+        	logger.info(error.getMessage());
+        }
 	}
 
 }
